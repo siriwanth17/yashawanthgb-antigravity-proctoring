@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  passwordHash    String
+  education       String?
+  careerInterest  String?
+  githubLink      String?
+  codingProfiles  String?  // Stored as a simple comma-separated string for SQLite
+  lockoutUntil    DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  resume          Resume?
+  badges          Badge[]
+  tests           SkillTest[]
+  documents       Document[]
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  fileUrl     String
+  format      String?
+  uploadDate  DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Resume {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  fileUrl     String
+  uploadDate  DateTime @default(now())
+  status      String   @default("PENDING") // PENDING, EXTRACTING, COMPLETED
+  user        User     @relation(fields: [userId], references: [id])
+  skills      Skill[]
+}
+
+model Skill {
+  id          String   @id @default(uuid())
+  resumeId    String
+  name        String
+  proficiency String?
+  verified    Boolean  @default(false)
+  trustScore  Int?
+  resume      Resume   @relation(fields: [resumeId], references: [id])
+  tests       SkillTest[]
+}
+
+model SkillTest {
+  id          String   @id @default(uuid())
+  userId      String
+  skillId     String
+  score          Int      @default(0)
+  totalScore     Int      @default(8)
+  status         String   @default("PENDING") // PENDING, PASSED, FAILED, REJECTED
+  passed         Boolean  @default(false) // Deprecated: keeping for backwards compatibility until full migration
+  terminationLog String?
+  createdAt      DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+  skill       Skill    @relation(fields: [skillId], references: [id])
+  questions   Question[]
+  proctorLogs ProctoringLog[]
+}
+
+model ProctoringLog {
+  id          String   @id @default(uuid())
+  testId      String
+  userId      String
+  eventType   String   // talking_detected, tab_switch, object_detected, face_missing
+  severity    String   @default("LOW") // LOW, MEDIUM, HIGH
+  screenshot  String?  // Base64 image data
+  timestamp   DateTime @default(now())
+  
+  test        SkillTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id          String   @id @default(uuid())
+  testId      String
+  text        String
+  options     String   // Stored as JSON string
+  answerIndex Int
+  
+  test        SkillTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+}
+
+model Badge {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  imageUrl    String
+  issuedAt    DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}

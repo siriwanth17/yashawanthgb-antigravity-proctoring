@@ -1,0 +1,17 @@
+src/middlewares/authHandler.ts(2,17): error TS7016: Could not find a declaration file for module 'jsonwebtoken'. 'C:/hack/backend/node_modules/jsonwebtoken/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jsonwebtoken` if it exists or add a new declaration (.d.ts) file containing `declare module 'jsonwebtoken';`
+src/routes/auth.ts(2,20): error TS7016: Could not find a declaration file for module 'bcrypt'. 'C:/hack/backend/node_modules/bcrypt/bcrypt.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/bcrypt` if it exists or add a new declaration (.d.ts) file containing `declare module 'bcrypt';`
+src/routes/auth.ts(3,17): error TS7016: Could not find a declaration file for module 'jsonwebtoken'. 'C:/hack/backend/node_modules/jsonwebtoken/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jsonwebtoken` if it exists or add a new declaration (.d.ts) file containing `declare module 'jsonwebtoken';`
+src/routes/skills.ts(16,16): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/routes/skills.ts(25,25): error TS2551: Property 'resume' does not exist on type '{ id: string; name: string; resumeId: string; proficiency: string | null; verified: boolean; trustScore: number | null; }'. Did you mean 'resumeId'?
+src/routes/skills.ts(36,15): error TS2339: Property 'tests' does not exist on type '{ id: string; name: string; resumeId: string; proficiency: string | null; verified: boolean; trustScore: number | null; }'.
+src/routes/skills.ts(36,30): error TS2339: Property 'tests' does not exist on type '{ id: string; name: string; resumeId: string; proficiency: string | null; verified: boolean; trustScore: number | null; }'.
+src/routes/skills.ts(38,30): error TS2339: Property 'tests' does not exist on type '{ id: string; name: string; resumeId: string; proficiency: string | null; verified: boolean; trustScore: number | null; }'.
+src/routes/skills.ts(38,44): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/routes/skills.ts(38,50): error TS7006: Parameter 'current' implicitly has an 'any' type.
+src/routes/skills.ts(45,30): error TS2551: Property 'resume' does not exist on type '{ id: string; name: string; resumeId: string; proficiency: string | null; verified: boolean; trustScore: number | null; }'. Did you mean 'resumeId'?
+src/routes/skills.ts(75,16): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
