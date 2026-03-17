@@ -19,7 +19,20 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" } // Allow static files to be served cross-origin
 }));
 
-app.use(cors());
+// Enhanced CORS configuration for ngrok and cross-origin access
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow all origins during development (necessary for ngrok tunneling)
+    // In production, you would specify allowed origins
+    callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Type'],
+  maxAge: 86400 // 24 hours
+}));
+
 app.use(express.json({ limit: '2mb' })); // Increased limit for base64 encoded screenshots
 
 // Basic Input Sanitization Middleware to strip extra spaces or dangerous characters
@@ -34,6 +47,18 @@ const sanitizeData = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 app.use(sanitizeData);
+
+// Debug Logging Middleware - Log all API requests
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log('Request body:', { ...req.body, password: req.body.password ? '***' : undefined });
+  }
+  if (req.headers.authorization) {
+    console.log('Authorization header present:', 'Bearer [TOKEN]');
+  }
+  next();
+});
 
 // Global Rate Limiting
 const globalLimiter = rateLimit({
@@ -62,10 +87,21 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/proctoring', proctoringRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Backend API is running!' });
+  res.json({ status: 'ok', message: 'Backend API is running!', port: PORT, timestamp: new Date().toISOString() });
 });
 
-const PORT = 5000;
+// Global error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('[ERROR]', err.message || err);
+  res.status(err.status || 500).json({ 
+    error: err.message || 'Internal Server Error',
+    timestamp: new Date().toISOString()
+  });
+});
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
+  console.log(`✅ Backend server running on http://localhost:${PORT}`);
+  console.log(`✅ CORS enabled for all origins (ngrok compatible)`);
+  console.log(`✅ Health check: http://localhost:${PORT}/api/health`);
 });
